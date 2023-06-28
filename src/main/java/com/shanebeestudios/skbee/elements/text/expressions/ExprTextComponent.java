@@ -1,24 +1,20 @@
 package com.shanebeestudios.skbee.elements.text.expressions;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.expressions.ExprTool;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.util.LiteralUtils;
-import ch.njol.skript.util.slot.Slot;
 import ch.njol.util.Kleenean;
-import com.shanebeestudios.skbee.api.text.BeeComponent;
+import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
+import com.shanebeestudios.skbee.api.util.ChatUtil;
 import com.shanebeestudios.skbee.api.util.Util;
-import net.kyori.adventure.translation.Translatable;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -42,9 +38,9 @@ import java.util.List;
         "set {_assist} to translate component from \"death.fell.assist\" using victim's name and attacker's name",
         "set {_key} to keybind component of \"key.jump\""})
 @Since("1.5.0")
-public class ExprTextComponent extends SimpleExpression<BeeComponent> {
+public class ExprTextComponent extends SimpleExpression<ComponentWrapper> {
     static {
-        Skript.registerExpression(ExprTextComponent.class, BeeComponent.class, ExpressionType.COMBINED,
+        Skript.registerExpression(ExprTextComponent.class, ComponentWrapper.class, ExpressionType.COMBINED,
                 "[a] [new] text component[s] (from|of) %strings%",
                 "[a] [new] key[ ]bind component[s] (from|of) %strings%",
                 "[a] [new] translate component[s] (from|of) %objects% [(with|using) %-objects%]");
@@ -67,46 +63,27 @@ public class ExprTextComponent extends SimpleExpression<BeeComponent> {
 
     @SuppressWarnings("NullableProblems")
     @Override
-    protected BeeComponent[] get(@NotNull Event e) {
-        List<BeeComponent> components = new ArrayList<>();
+    protected ComponentWrapper[] get(@NotNull Event e) {
+        List<ComponentWrapper> components = new ArrayList<>();
 
         for (Object object : this.translation.getArray(e)) {
             if (pattern == 0) {
-                components.add(BeeComponent.fromText(Util.getColString(((String) object))));
+                components.add(ComponentWrapper.fromText(Util.getColString(((String) object))));
             } else if (pattern == 1) {
-                components.add(BeeComponent.fromKeybind((String) object));
+                components.add(ComponentWrapper.fromKeybind((String) object));
             } else if (pattern == 2) {
-                String translate = getTranslation(object, e);
+                String translate = ChatUtil.getTranslation(object);
                 if (translate != null) {
                     if (this.objects != null) {
-                        components.add(BeeComponent.fromTranslate(translate, this.objects.getArray(e)));
+                        components.add(ComponentWrapper.fromTranslate(translate, this.objects.getArray(e)));
                     } else {
-                        components.add(BeeComponent.fromTranslate(translate));
+                        components.add(ComponentWrapper.fromTranslate(translate));
                     }
 
                 }
             }
         }
-        return components.toArray(new BeeComponent[0]);
-    }
-
-    public static String getTranslation(Object object, Event event) {
-        if (object instanceof ItemStack itemStack) {
-            return itemStack.translationKey();
-        } else if (object instanceof ItemType itemType) {
-            ItemStack itemStack = itemType.getRandom();
-            return itemStack.translationKey();
-        } else if (object instanceof Slot slot) {
-            ItemStack itemStack = slot.getItem();
-            return getTranslation(itemStack, event);
-        } else if (object instanceof ExprTool tool) {
-            return getTranslation(tool.getSingle(event), event);
-        } else if (object instanceof String string) {
-            return string;
-        } else if (object instanceof Translatable translatable) {
-            return translatable.translationKey();
-        }
-        return null;
+        return components.toArray(new ComponentWrapper[0]);
     }
 
     @Override
@@ -115,8 +92,8 @@ public class ExprTextComponent extends SimpleExpression<BeeComponent> {
     }
 
     @Override
-    public @NotNull Class<? extends BeeComponent> getReturnType() {
-        return BeeComponent.class;
+    public @NotNull Class<? extends ComponentWrapper> getReturnType() {
+        return ComponentWrapper.class;
     }
 
     @Override

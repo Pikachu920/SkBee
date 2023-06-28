@@ -8,7 +8,7 @@ import ch.njol.skript.lang.function.Parameter;
 import ch.njol.skript.lang.function.SimpleJavaFunction;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.DefaultClasses;
-import com.shanebeestudios.skbee.api.util.EnumUtils;
+import com.shanebeestudios.skbee.api.wrapper.EnumWrapper;
 import com.shanebeestudios.skbee.api.util.MathUtil;
 import org.bukkit.Color;
 import org.bukkit.entity.Display;
@@ -39,7 +39,7 @@ public class Types {
                 .description("Represents the brightness attributes of a Display Entity.", McWIKI)
                 .since("2.8.0"));
 
-        EnumUtils<Billboard> BILLBOARD_ENUM = new EnumUtils<>(Billboard.class);
+        EnumWrapper<Billboard> BILLBOARD_ENUM = new EnumWrapper<>(Billboard.class);
         Classes.registerClass(new ClassInfo<>(Billboard.class, "displaybillboard")
                 .user("display ?billboards?")
                 .name("DisplayEntity - Billboard")
@@ -48,7 +48,7 @@ public class Types {
                 .since("2.8.0")
                 .parser(BILLBOARD_ENUM.getParser()));
 
-        EnumUtils<TextAlignment> TEXT_ALIGNMENT_ENUM = new EnumUtils<>(TextAlignment.class, "", "aligned");
+        EnumWrapper<TextAlignment> TEXT_ALIGNMENT_ENUM = new EnumWrapper<>(TextAlignment.class, "", "aligned");
         Classes.registerClass(new ClassInfo<>(TextAlignment.class, "textalignment")
                 .user("text ?alignments?")
                 .name("DisplayEntity - Text Alignment")
@@ -59,7 +59,7 @@ public class Types {
                 .since("2.8.0")
                 .parser(TEXT_ALIGNMENT_ENUM.getParser()));
 
-        EnumUtils<ItemDisplayTransform> TRANSFORM_ENUM = new EnumUtils<>(ItemDisplayTransform.class, "", "transform");
+        EnumWrapper<ItemDisplayTransform> TRANSFORM_ENUM = new EnumWrapper<>(ItemDisplayTransform.class, "", "transform");
         Classes.registerClass(new ClassInfo<>(ItemDisplayTransform.class, "itemdisplaytransform")
                 .user("item ?display ?transforms?")
                 .name("DisplayEntity - Item Display Transform")
@@ -80,7 +80,29 @@ public class Types {
                 .name("Bukkit Color")
                 .description("Represents a Bukkit color. This is different than a Skript color",
                         "as it adds an alpha channel.")
-                .since("2.8.0"));
+                .since("2.8.0")
+                .parser(new Parser<>() {
+
+                    @SuppressWarnings("NullableProblems")
+                    @Override
+                    public boolean canParse(ParseContext context) {
+                        return false;
+                    }
+
+                    @Override
+                    public @NotNull String toString(Color bukkitColor, int flags) {
+                        int alpha = bukkitColor.getAlpha();
+                        int red = bukkitColor.getRed();
+                        int green = bukkitColor.getGreen();
+                        int blue = bukkitColor.getBlue();
+                        return String.format("BukkitColor(a=%s,r=%s,g=%s,b=%s)", alpha, red, green, blue);
+                    }
+
+                    @Override
+                    public @NotNull String toVariableNameString(Color bukkitColor) {
+                        return toString(bukkitColor, 0);
+                    }
+                }));
 
         QUATERNION = new ClassInfo<>(Quaternionf.class, "quaternion")
                 .user("quaternions?")
@@ -101,7 +123,7 @@ public class Types {
                         float y = vec4f.y;
                         float z = vec4f.z;
                         float w = vec4f.w;
-                        return String.format("Quaternion(x=%s, y=%s, z=%s, w=%s)", x,y,z,w);
+                        return String.format("Quaternion(x=%s, y=%s, z=%s, w=%s)", x, y, z, w);
                     }
 
                     @Override

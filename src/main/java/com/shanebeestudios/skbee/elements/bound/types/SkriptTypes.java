@@ -10,8 +10,8 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.util.coll.CollectionUtils;
 import ch.njol.yggdrasil.Fields;
 import com.shanebeestudios.skbee.SkBee;
-import com.shanebeestudios.skbee.elements.bound.config.BoundConfig;
-import com.shanebeestudios.skbee.elements.bound.objects.Bound;
+import com.shanebeestudios.skbee.config.BoundConfig;
+import com.shanebeestudios.skbee.api.bound.Bound;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public class SkriptTypes {
                         String greater = getLoc(bound.getGreaterCorner());
                         String lesser = getLoc(bound.getLesserCorner());
                         String world = bound.getWorld().getName();
-                        return String.format("Bound '%s' between %s and %s in world \"%s\"",
+                        return String.format((bound.isTemporary() ? "Temporary bound" : "Bound") + " '%s' between %s and %s in world \"%s\"",
                                 bound.getId(), lesser, greater, world);
                     }
 

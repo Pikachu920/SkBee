@@ -11,7 +11,7 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import com.shanebeestudios.skbee.elements.bound.objects.Bound;
+import com.shanebeestudios.skbee.api.bound.Bound;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,8 @@ import java.util.List;
 
 @Name("Bound - Entities")
 @Description("Get all the entities within a bound. NOTE: If the chunk in a bound is unloaded, entities will also be unloaded.")
-@Examples({"loop entities of bound with id \"my-bound\":",
+@Examples({"set {_b} to bound with id \"my-bound\"",
+        "loop entities in bound {_b}:",
         "\tif loop-entity is a cow or pig:",
         "\t\tkill loop-entity"})
 @Since("1.15.0")
@@ -30,7 +31,7 @@ public class ExprBoundEntities extends SimpleExpression<Entity> {
 
     static {
         Skript.registerExpression(ExprBoundEntities.class, Entity.class, ExpressionType.SIMPLE,
-                "[(all [[of] the]|the)] %*entitydatas% of [bound] %bounds%");
+                "[(all [[of] the]|the)] %*entitydatas% (of|in) bound[s] %bounds%");
     }
 
     private Expression<EntityData<?>> entityDatas;

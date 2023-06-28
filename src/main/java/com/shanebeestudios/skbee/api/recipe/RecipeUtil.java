@@ -1,7 +1,6 @@
 package com.shanebeestudios.skbee.api.recipe;
 
 import ch.njol.skript.util.Timespan;
-import com.shanebeestudios.skbee.SkBee;
 import com.shanebeestudios.skbee.api.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
@@ -17,9 +16,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 
+/**
+ * Utility methods for {@link Recipe recipes}
+ */
 public class RecipeUtil {
-
-    private static final String NAMESPACE = SkBee.getPlugin().getPluginConfig().RECIPE_NAMESPACE;
 
     /**
      * Get a NamespacedKey from string
@@ -27,14 +27,17 @@ public class RecipeUtil {
      *
      * @param key Key for new NamespacedKey, ex: "plugin:key" or "minecraft:something"
      * @return New NamespacedKey
+     * @deprecated Planning to remove all string based ids for recipes in the future, please use {@link Util#getNamespacedKey(String, boolean)}
+     * more information on this in the future when it's put into action
      */
+    @Deprecated()
     public static NamespacedKey getKey(String key) {
         try {
             NamespacedKey namespacedKey;
             if (key.contains(":")) {
                 namespacedKey = NamespacedKey.fromString(key.toLowerCase(Locale.ROOT));
             } else {
-                namespacedKey = new NamespacedKey(NAMESPACE, key.toLowerCase());
+                namespacedKey = Util.getNamespacedKey(key, false);
             }
             if (namespacedKey == null) {
                 error("Invalid namespaced key. Must be [a-z0-9/._-:]: " + key);
@@ -82,6 +85,12 @@ public class RecipeUtil {
 
     }
 
+    /**
+     * Log a cooking recipe to console
+     * Mainly used for debugging purposes
+     *
+     * @param recipe Recipe to log
+     */
     public static void logCookingRecipe(CookingRecipe<?> recipe) {
         log("&aRegistered new cooking recipe: &7(&b%s&7)", ((Keyed) recipe).getKey().toString());
         log(" - &7Result: &e%s", recipe.getResult());

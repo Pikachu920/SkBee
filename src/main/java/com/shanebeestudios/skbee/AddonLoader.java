@@ -8,13 +8,13 @@ import com.shanebeestudios.skbee.api.listener.BoundBorderListener;
 import com.shanebeestudios.skbee.api.listener.EntityListener;
 import com.shanebeestudios.skbee.api.listener.NBTListener;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
-import com.shanebeestudios.skbee.api.structure.StructureBeeManager;
+import com.shanebeestudios.skbee.api.structure.StructureManager;
 import com.shanebeestudios.skbee.api.util.LoggerBee;
 import com.shanebeestudios.skbee.api.util.SkriptUtils;
 import com.shanebeestudios.skbee.api.util.Util;
 import com.shanebeestudios.skbee.config.Config;
-import com.shanebeestudios.skbee.elements.bound.config.BoundConfig;
-import com.shanebeestudios.skbee.elements.scoreboard.objects.BoardManager;
+import com.shanebeestudios.skbee.config.BoundConfig;
+import com.shanebeestudios.skbee.api.scoreboard.BoardManager;
 import com.shanebeestudios.skbee.elements.virtualfurnace.listener.VirtualFurnaceListener;
 import com.shanebeestudios.skbee.elements.worldcreator.objects.BeeWorldConfig;
 import com.shanebeestudios.vf.api.VirtualFurnaceAPI;
@@ -68,6 +68,7 @@ public class AddonLoader {
         Version version = new Version(SkBee.EARLIEST_VERSION);
         if (!Skript.isRunningMinecraft(version)) {
             Util.log("&cYour server version &7'&bMC %s&7'&c is not supported, only &7'&bMC %s+&7'&c is supported!", Skript.getMinecraftVersion(), version);
+            Util.log("&7For outdated server versions please see: &ehttps://github.com/ShaneBeee/SkBee#outdated");
             return false;
         }
         return true;
@@ -279,7 +280,7 @@ public class AddonLoader {
             return;
         }
 
-        this.plugin.structureBeeManager = new StructureBeeManager();
+        this.plugin.structureManager = new StructureManager();
         try {
             addon.loadClasses("com.shanebeestudios.skbee.elements.structure");
             Util.logLoading("&5Structure Elements &asuccessfully loaded");

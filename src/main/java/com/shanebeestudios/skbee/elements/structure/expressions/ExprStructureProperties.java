@@ -11,7 +11,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-import com.shanebeestudios.skbee.api.structure.StructureBee;
+import com.shanebeestudios.skbee.api.structure.StructureWrapper;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.event.Event;
@@ -29,40 +29,40 @@ import org.jetbrains.annotations.Nullable;
         "Size returns a vector offset from the starting point of the structure. This cannot be changed.",
         "\nNOTE: `reset` will reset the value back to default. (added in v-2.7.2)",
         "Requires MC 1.17.1+"})
-@Examples({"set rotation of {_s} to clockwise 90",
-        "set {_r} to rotation of {_s}",
-        "set {_v} to size of {_s}",
-        "set include entities of structure {_s} to false",
-        "set integrity of structure {_s} to 0.75",
-        "reset rotation of {_s}",
-        "reset integrity of {_s}"})
+@Examples({"set structure rotation of {_s} to clockwise 90",
+        "set {_r} to structure rotation of {_s}",
+        "set {_v} to structure size of {_s}",
+        "set structure include entities of {_s} to false",
+        "set structure integrity of {_s} to 0.75",
+        "reset structure rotation of {_s}",
+        "reset structure integrity of {_s}"})
 @Since("1.12.0")
-public class ExprStructureProperties extends PropertyExpression<StructureBee, Object> {
+public class ExprStructureProperties extends PropertyExpression<StructureWrapper, Object> {
 
     static {
         Skript.registerExpression(ExprStructureProperties.class, Object.class, ExpressionType.PROPERTY,
-                "mirror of [structure] %structures%",
-                "rotation of [structure] %structures%",
-                "integrity of [structure] %structures%",
-                "include entities of [structure] %structures%",
-                "size of [structure] %structures%");
+                "structure mirror of %structures%",
+                "structure rotation of %structures%",
+                "structure integrity of %structures%",
+                "structure include entities of %structures%",
+                "structure size of %structures%");
     }
 
     private int pattern;
-    private Expression<StructureBee> structures;
+    private Expression<StructureWrapper> structures;
 
     @SuppressWarnings({"NullableProblems", "unchecked"})
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
         pattern = matchedPattern;
-        structures = (Expression<StructureBee>) exprs[0];
+        structures = (Expression<StructureWrapper>) exprs[0];
         setExpr(structures);
         return true;
     }
 
     @SuppressWarnings("NullableProblems")
     @Override
-    protected Object[] get(Event event, StructureBee[] source) {
+    protected Object[] get(Event event, StructureWrapper[] source) {
         return get(source, structure -> switch (pattern) {
             case 0 -> structure.getMirror();
             case 1 -> structure.getRotation();
@@ -94,7 +94,7 @@ public class ExprStructureProperties extends PropertyExpression<StructureBee, Ob
     public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
         boolean reset = mode == ChangeMode.RESET;
         if (mode == ChangeMode.SET || reset) {
-            for (StructureBee structure : getExpr().getArray(event)) {
+            for (StructureWrapper structure : getExpr().getArray(event)) {
                 switch (pattern) {
                     case 0 -> structure.setMirror(reset ? Mirror.NONE : (Mirror) delta[0]);
                     case 1 -> structure.setRotation(reset ? StructureRotation.NONE : (StructureRotation) delta[0]);
